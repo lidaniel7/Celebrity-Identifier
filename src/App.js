@@ -3,9 +3,12 @@ import React, { useEffect, useState } from 'react'
 import Navigation from './Components/Navigation'
 import ImageLinkForm from './Components/ImageLinkForm/ImageLinkForm'
 import FaceRecognition from './Components/FaceRecognition/FaceRecognition'
+import Signin from './Components/Signin/Signin';
+import Register from './Components/Register/Register'
 import Rank from './Components/Rank/Rank'
 import Particles from 'react-particles-js'
 import Clarifai from 'clarifai';
+
 
 
 
@@ -79,6 +82,7 @@ function App() {
       <Particles className='particles'
         params={particlesOptions} />
       <Navigation />
+      <Signin />
       <Rank />
       <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit}/>
       <FaceRecognition box={box} imageURL={imageURL}/>

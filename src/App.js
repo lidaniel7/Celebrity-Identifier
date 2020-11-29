@@ -26,7 +26,7 @@ const particlesOptions = {
 
 const app = new Clarifai.App({
   apiKey: '5009735fc64a4202af3518c63e0683b3'
- });
+});
 
 
 function App() {
@@ -35,6 +35,8 @@ function App() {
   const [imageURL, setImageURL] = useState('')
   const [box, setBox] = useState({})
   const [celebName, setCelebName] = useState('')
+  const [route, setRoute] = useState('signin')
+  const [isSignedIn, setSignIn] = useState(false) 
 
 
   const faceHandler = (data) => {
@@ -68,6 +70,15 @@ function App() {
       .catch(error => console.log(error))
   }
 
+  const onRouteChange = (route) => {
+    if (route === 'signout') {
+      setSignIn(false)
+    } else if (route === 'home') {
+      setSignIn(true)
+    }
+    setRoute(route)
+  }
+
   // app.models.predict({id: Clarifai.GENERAL_MODEL, version: "aa7f35c01e0642fda5cf400f543e7c40"})
   //     .then(generalModel => {
   //       return generalModel.predict("https://samples.clarifai.com/face-det.jpg");
@@ -81,11 +92,19 @@ function App() {
     <div className="App">
       <Particles className='particles'
         params={particlesOptions} />
-      <Navigation />
-      <Signin />
-      <Rank />
-      <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit}/>
-      <FaceRecognition box={box} imageURL={imageURL}/>
+      <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange}/>
+      {route === 'home'
+        ? <div>
+          <Rank />
+          <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit} />
+          <FaceRecognition box={box} imageURL={imageURL} />
+        </div>
+        : (
+          route === 'signin' 
+          ? <Signin onRouteChange={onRouteChange}/> 
+          : <Register onRouteChange={onRouteChange}/>
+        )
+      }
     </div>
   );
 }

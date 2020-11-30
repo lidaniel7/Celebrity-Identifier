@@ -1,6 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react'
+import axios from 'axios';
 
-const Signin = ({ imageURL, box, onRouteChange }) => {
+
+const Signin = ({ imageURL, box, onRouteChange, loadUser }) => {
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const onEmailChange = (event) => {
+        setEmail(event.target.value)
+    }
+
+    const onPasswordChange = (event) => {
+        setPassword(event.target.value)
+    }
+
+    const onSubmitSignIn = () => {
+        const user = {
+            email: email,
+            password: password,
+        }
+
+        axios.post('http://localhost:3000/signin', user)
+            .then(response => response.data)
+            .then(data => {
+                if (data.id) {
+                    loadUser(data)
+                    onRouteChange('home')
+                }
+            })
+    }
+
     return (
         <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
             <main className="pa4 black-80">
@@ -10,6 +40,7 @@ const Signin = ({ imageURL, box, onRouteChange }) => {
                         <div className="mt3">
                             <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
                             <input
+                                onChange={onEmailChange}
                                 className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                                 type="email"
                                 name="email-address"
@@ -19,6 +50,7 @@ const Signin = ({ imageURL, box, onRouteChange }) => {
                         <div className="mv3">
                             <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
                             <input
+                                onChange={onPasswordChange}
                                 className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
                                 type="password"
                                 name="password"
@@ -28,7 +60,7 @@ const Signin = ({ imageURL, box, onRouteChange }) => {
                     </fieldset>
                     <div className="">
                         <input
-                            onClick={() => onRouteChange('home')}
+                            onClick={onSubmitSignIn}
                             className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
                             type="submit"
                             value="Sign in"

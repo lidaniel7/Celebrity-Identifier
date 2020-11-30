@@ -8,6 +8,7 @@ import Register from './Components/Register/Register'
 import Rank from './Components/Rank/Rank'
 import Particles from 'react-particles-js'
 import Clarifai from 'clarifai';
+import axios from 'axios';
 
 
 
@@ -36,7 +37,30 @@ function App() {
   const [box, setBox] = useState({})
   const [celebName, setCelebName] = useState('')
   const [route, setRoute] = useState('signin')
-  const [isSignedIn, setSignIn] = useState(false) 
+  const [isSignedIn, setSignIn] = useState(false)
+  const [user, setUser] = useState({
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  })
+
+  const loadUser = (data) => {
+    setUser({
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
+    })
+  }
+
+  // useEffect(() => {
+  //   axios.get('http://localhost:3000')
+  //     .then(response => response.data)
+  //     .then(data => console.log(data))
+  // }, [])
 
 
   const faceHandler = (data) => {
@@ -64,9 +88,22 @@ function App() {
   const onButtonSubmit = () => {
     setImageURL(input)
     app.models.predict(Clarifai.CELEBRITY_MODEL, input)
-      .then(response => (
+      .then(response => {
+        if (response) {
+          const userID = {
+            id: user.id
+          }
+          axios.put('http://localhost:3000/image', userID)
+            .then(response => response.data)
+            .then(count => {
+              setUser(prevState => ({
+                ...prevState,
+                entries: count
+              }))
+            })
+        }
         faceBox(faceHandler(response))
-      ))
+      })
       .catch(error => console.log(error))
   }
 
@@ -92,17 +129,17 @@ function App() {
     <div className="App">
       <Particles className='particles'
         params={particlesOptions} />
-      <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange}/>
+      <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
       {route === 'home'
         ? <div>
-          <Rank />
+          <Rank name={user.name} entries={user.entries}/>
           <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit} />
           <FaceRecognition box={box} imageURL={imageURL} />
         </div>
         : (
-          route === 'signin' 
-          ? <Signin onRouteChange={onRouteChange}/> 
-          : <Register onRouteChange={onRouteChange}/>
+          route === 'signin'
+            ? <Signin onRouteChange={onRouteChange} loadUser={loadUser}/>
+            : <Register onRouteChange={onRouteChange} loadUser={loadUser}/>
         )
       }
     </div>

@@ -30,7 +30,7 @@ const Register = ({ imageURL, box, onRouteChange, loadUser }) => {
         axios.post('http://localhost:3000/register', user)
             .then(response => response.data)
             .then(user => {
-                if (user) {
+                if (user.id) {
                     loadUser(user)
                     onRouteChange('home')
                 }

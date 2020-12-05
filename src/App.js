@@ -6,8 +6,8 @@ import FaceRecognition from './Components/FaceRecognition/FaceRecognition'
 import Signin from './Components/Signin/Signin';
 import Register from './Components/Register/Register'
 import Rank from './Components/Rank/Rank'
+import Name from './Components/Name/Name'
 import Particles from 'react-particles-js'
-import Clarifai from 'clarifai';
 import axios from 'axios';
 
 
@@ -24,10 +24,6 @@ const particlesOptions = {
     }
   }
 }
-
-const app = new Clarifai.App({
-  apiKey: '5009735fc64a4202af3518c63e0683b3'
-});
 
 
 function App() {
@@ -64,7 +60,13 @@ function App() {
 
 
   const faceHandler = (data) => {
-    setCelebName(data['outputs'][0]['data']['regions'][0]['data']['concepts'][0].name)
+    let name = data['outputs'][0]['data']['regions'][0]['data']['concepts'][0].name
+    name = name.split(' ')
+    name[0] = name[0][0].toUpperCase() + name[0].substr(1)
+    name[1] = name[1][0].toUpperCase() + name[1].substr(1)
+    name = name.join(" ")
+    setCelebName(name)
+
     const dimensions = data['outputs'][0]['data']['regions'][0]['region_info']['bounding_box']
     const image = document.getElementById('inputimage');
     const width = Number(image.width)
@@ -87,9 +89,9 @@ function App() {
 
   const onButtonSubmit = () => {
     setImageURL(input)
-    app.models.predict(Clarifai.CELEBRITY_MODEL, input)
+    axios.post('http://localhost:3000/imageurl', {input: input})
       .then(response => {
-        if (response) {
+        if (response.data) {
           const userID = {
             id: user.id
           }
@@ -103,7 +105,7 @@ function App() {
             })
             .catch(console.log)
         }
-        faceBox(faceHandler(response))
+        faceBox(faceHandler(response.data))
       })
       .catch(error => console.log(error))
   }
@@ -112,6 +114,7 @@ function App() {
     if (route === 'signout') {
       setSignIn(false)
       setImageURL('')
+      setCelebName('')
     } else if (route === 'home') {
       setSignIn(true)
     }
@@ -136,6 +139,7 @@ function App() {
         ? <div>
           <Rank name={user.name} entries={user.entries}/>
           <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit} />
+          {celebName ? <Name celebName={celebName} /> : <p></p>}
           <FaceRecognition box={box} imageURL={imageURL} />
         </div>
         : (

@@ -101,6 +101,7 @@ function App() {
                 entries: count
               }))
             })
+            .catch(console.log)
         }
         faceBox(faceHandler(response))
       })
@@ -110,6 +111,7 @@ function App() {
   const onRouteChange = (route) => {
     if (route === 'signout') {
       setSignIn(false)
+      setImageURL('')
     } else if (route === 'home') {
       setSignIn(true)
     }

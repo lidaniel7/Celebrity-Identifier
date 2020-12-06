@@ -66,6 +66,13 @@ function App() {
     name[1] = name[1][0].toUpperCase() + name[1].substr(1)
     name = name.join(" ")
     setCelebName(name)
+    axios.post('http://localhost:3000/updateleaderboard', {name: name})
+      .then(response => {
+        console.log(response.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
 
     const dimensions = data['outputs'][0]['data']['regions'][0]['region_info']['bounding_box']
     const image = document.getElementById('inputimage');

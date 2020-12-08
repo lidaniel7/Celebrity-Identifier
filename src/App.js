@@ -7,8 +7,10 @@ import Signin from './Components/Signin/Signin';
 import Register from './Components/Register/Register'
 import Rank from './Components/Rank/Rank'
 import Name from './Components/Name/Name'
+import Leaderboard from './Components/Leaderboard/Leaderboard'
 import Particles from 'react-particles-js'
 import axios from 'axios';
+
 
 
 
@@ -16,10 +18,10 @@ import axios from 'axios';
 const particlesOptions = {
   particles: {
     number: {
-      value: 50,
+      value: 80,
       density: {
         enable: true,
-        value_area: 1000
+        value_area: 800
       }
     }
   }
@@ -34,6 +36,7 @@ function App() {
   const [celebName, setCelebName] = useState('')
   const [route, setRoute] = useState('signin')
   const [isSignedIn, setSignIn] = useState(false)
+  const [leaderboard, setleaderboard] = useState({})
   const [user, setUser] = useState({
     id: '',
     name: '',
@@ -52,11 +55,11 @@ function App() {
     })
   }
 
-  // useEffect(() => {
-  //   axios.get('http://localhost:3000')
-  //     .then(response => response.data)
-  //     .then(data => console.log(data))
-  // }, [])
+  useEffect(() => {
+    axios.get('http://localhost:3000/leaderboard')
+      .then(response => response.data)
+      .then(data => setleaderboard(data))
+  }, [])
 
 
   const faceHandler = (data) => {
@@ -66,7 +69,7 @@ function App() {
     name[1] = name[1][0].toUpperCase() + name[1].substr(1)
     name = name.join(" ")
     setCelebName(name)
-    axios.post('http://localhost:3000/updateleaderboard', {name: name})
+    axios.post('http://localhost:3000/updateleaderboard', { name: name })
       .then(response => {
         console.log(response.data)
       })
@@ -96,7 +99,7 @@ function App() {
 
   const onButtonSubmit = () => {
     setImageURL(input)
-    axios.post('http://localhost:3000/imageurl', {input: input})
+    axios.post('http://localhost:3000/imageurl', { input: input })
       .then(response => {
         if (response.data) {
           const userID = {
@@ -113,6 +116,9 @@ function App() {
             .catch(console.log)
         }
         faceBox(faceHandler(response.data))
+        axios.get('http://localhost:3000/leaderboard')
+          .then(response => response.data)
+          .then(data => setleaderboard(data))
       })
       .catch(error => console.log(error))
   }
@@ -144,15 +150,16 @@ function App() {
       <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
       {route === 'home'
         ? <div>
-          <Rank name={user.name} entries={user.entries}/>
+          <Rank name={user.name} entries={user.entries} />
+          <Leaderboard leaderboard={leaderboard} />
           <ImageLinkForm onInputChange={onInputChange} onButtonSubmit={onButtonSubmit} />
           {celebName ? <Name celebName={celebName} /> : <p></p>}
           <FaceRecognition box={box} imageURL={imageURL} />
         </div>
         : (
           route === 'signin'
-            ? <Signin onRouteChange={onRouteChange} loadUser={loadUser}/>
-            : <Register onRouteChange={onRouteChange} loadUser={loadUser}/>
+            ? <Signin onRouteChange={onRouteChange} loadUser={loadUser} />
+            : <Register onRouteChange={onRouteChange} loadUser={loadUser} />
         )
       }
     </div>

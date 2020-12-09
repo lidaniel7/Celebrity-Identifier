@@ -56,7 +56,7 @@ function App() {
   }
 
   useEffect(() => {
-    axios.get('http://localhost:3000/leaderboard')
+    axios.get('https://protected-badlands-42275.herokuapp.com/leaderboard')
       .then(response => response.data)
       .then(data => setleaderboard(data))
   }, [])
@@ -69,7 +69,7 @@ function App() {
     name[1] = name[1][0].toUpperCase() + name[1].substr(1)
     name = name.join(" ")
     setCelebName(name)
-    axios.post('http://localhost:3000/updateleaderboard', { name: name })
+    axios.post('https://protected-badlands-42275.herokuapp.com/updateleaderboard', { name: name })
       .then(response => {
         console.log(response.data)
       })
@@ -99,13 +99,13 @@ function App() {
 
   const onButtonSubmit = () => {
     setImageURL(input)
-    axios.post('http://localhost:3000/imageurl', { input: input })
+    axios.post('https://protected-badlands-42275.herokuapp.com/imageurl', { input: input })
       .then(response => {
         if (response.data) {
           const userID = {
             id: user.id
           }
-          axios.put('http://localhost:3000/image', userID)
+          axios.put('https://protected-badlands-42275.herokuapp.com/image', userID)
             .then(response => response.data)
             .then(count => {
               setUser(prevState => ({
@@ -116,7 +116,7 @@ function App() {
             .catch(console.log)
         }
         faceBox(faceHandler(response.data))
-        axios.get('http://localhost:3000/leaderboard')
+        axios.get('https://protected-badlands-42275.herokuapp.com/leaderboard')
           .then(response => response.data)
           .then(data => setleaderboard(data))
       })

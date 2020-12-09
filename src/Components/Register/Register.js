@@ -27,7 +27,7 @@ const Register = ({ imageURL, box, onRouteChange, loadUser }) => {
             name: name
         }
 
-        axios.post('http://localhost:3000/register', user)
+        axios.post('https://protected-badlands-42275.herokuapp.com/register', user)
             .then(response => response.data)
             .then(user => {
                 if (user.id) {
